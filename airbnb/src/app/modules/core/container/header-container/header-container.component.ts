@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
-export type HomeTypes = 
+export type HomeTypes =
 'Entire apartment' |
 'Private room' |
-'Tree house' | 
+'Tree house' |
 'Hotel room';
 
 export interface FilterBarState {
@@ -36,7 +36,7 @@ export class HeaderContainerComponent implements OnInit {
     console.log('Here');
     const filters = this.filterBarState$.getValue();
     filters[filter].open = false;
-  
+
     this.filterBarState$.next(filters);
-  } 
+  }
 }

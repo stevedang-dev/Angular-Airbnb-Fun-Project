@@ -7,10 +7,13 @@ import { FilterBarState } from '../../container/header-container/header-containe
   styleUrls: ['./filter.component.less']
 })
 export class FilterComponent implements OnInit {
+//   @Input() filterBarState: FilterBarState;
+//   @Output() toggleFilterDropdown = new EventEmitter<string>();
+//   @Output() closeFilterDropdown = new EventEmitter<string>();
+
   @Input() filterBarState: FilterBarState;
   @Output() toggleFilterDropdown = new EventEmitter<string>();
   @Output() closeFilterDropdown = new EventEmitter<string>();
-
   constructor() { }
 
   ngOnInit() {
