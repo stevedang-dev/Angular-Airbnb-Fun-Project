@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
@@ -7,6 +7,9 @@ import { FormBuilder, FormGroup } from '@angular/forms';
   styleUrls: ['./filter-home-type-form.component.less']
 })
 export class FilterHomeTypeFormComponent implements OnInit {
+
+	@Output() applyHomeTypeFilter = new EventEmitter<string[]>();
+	
 	form: FormGroup;
 
 	constructor(private formBuilder: FormBuilder) { }
@@ -25,7 +28,7 @@ export class FilterHomeTypeFormComponent implements OnInit {
 
     	// Will pass homeTypes to the container component to make the API call and refresh the list.
     	console.log(homeTypes);
-
+		this.applyHomeTypeFilter.next(homeTypes);
 	}
 
 }

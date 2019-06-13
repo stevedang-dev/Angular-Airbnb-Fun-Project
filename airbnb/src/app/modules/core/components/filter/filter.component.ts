@@ -14,9 +14,13 @@ export class FilterComponent implements OnInit {
   @Input() filterBarState: FilterBarState;
   @Output() toggleFilterDropdown = new EventEmitter<string>();
   @Output() closeFilterDropdown = new EventEmitter<string>();
+  @Output() applyFilters = new EventEmitter<string>();
+
   constructor() { }
 
   ngOnInit() {
   }
+
+
 
 }
