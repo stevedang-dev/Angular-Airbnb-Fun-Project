@@ -1,5 +1,6 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { HomeTypes } from '../../container/header-container/header-container.component';
 
 @Component({
   selector: 'app-filter-home-type-form',
@@ -9,17 +10,17 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 export class FilterHomeTypeFormComponent implements OnInit {
 
 	@Output() applyHomeTypeFilter = new EventEmitter<string[]>();
-	
+	@Input() defaultFilters: HomeTypes[];
 	form: FormGroup;
 
 	constructor(private formBuilder: FormBuilder) { }
 
 	ngOnInit() {
 		this.form = this.formBuilder.group({
-			'Entire apartment': [],
-			'Private room': [],
-			'Tree house': [],
-			'Hotel room': []
+			'Entire apartment': [this.defaultFilters.includes('Entire apartment')],
+			'Private room': [this.defaultFilters.includes('Private room')],
+			'Tree house': [this.defaultFilters.includes('Tree house')],
+			'Hotel room': [this.defaultFilters.includes('Hotel room')]
 		});
 	}
 

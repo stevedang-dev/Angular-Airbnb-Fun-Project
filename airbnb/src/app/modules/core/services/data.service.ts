@@ -8,63 +8,59 @@ import { Filters } from '../container/header-container/header-container.componen
 
 
 export interface DataState<T> {
-  loading: boolean;
-  data: T;
+    loading: boolean;
+    data: T;
 }
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class DataService {
 
-  private homes$ = new BehaviorSubject({loading: false, data: []});
+    private homes$ = new BehaviorSubject({ loading: false, data: [] });
 
-  constructor(private activatedRoute: ActivatedRoute,
-              private httpClient: HttpClient) { }
+    constructor(private activatedRoute: ActivatedRoute,
+        private httpClient: HttpClient) { }
 
-  getHomes$(): Observable<DataState<Home[]>> {
-    return this.homes$.asObservable();
-  }
+    getHomes$(): Observable<DataState<Home[]>> {
+        return this.homes$.asObservable();
+    }
 
-  loadHomes(filters: Filters) {
-    this.homes$.next({loading: true, data: []});
-    this.httpClient.get<any[]>('assets/mocks/homes.json')
-      .pipe(
-        switchMap((homes: Home[]) => {
-          if (filters.homeType.length) {
-            return of(homes.filter((home: Home) => filters.homeType.includes(home.type)))
-          }
+    loadHomes(filters: Filters) {
+        this.homes$.next({ loading: true, data: [] });
+        this.httpClient.get<any[]>('assets/mocks/homes.json').pipe(
+            switchMap((homes: Home[]) => {
+                if (filters.homeType.length) {
+                    return of(homes.filter(listing => filters.homeType.includes(listing.type)));
+                }
+                return of(homes);
+            }),
+            delay(1000)
+        ).subscribe((homes: Home[]) => {
+            this.homes$.next({ loading: false, data: homes });
+        });
+    }
 
-          return of(homes);
-        }),
-        delay(1000)
-      )
-      .subscribe((homes: Home[]) => {
-        this.homes$.next({loading: false, data: homes});
-    });
-  }
+    getFiltersFromUrlQueryParams(): Observable<Filters> {
 
-  getFiltersFromUrlQueryParams(): Observable<Filters> {
-    return this.activatedRoute.queryParams.pipe(
-      switchMap(params => {
-        // check params type:
+        return this.activatedRoute.queryParams.pipe(
+            switchMap(params => {
+                if (Array.isArray(params['home-type'])) {
+                    return of({
+                        homeType: params['home-type']
+                    });
+                }
 
-        if (Array.isArray(params['home-type'])) {
-          return of({
-            homeType: [params['home-type']]
-          })
-        }
+                if (typeof params['home-type'] === 'string') {
+                    return of({
+                        homeType: [params['home-type']]
+                    });
+                }
 
-        if (typeof params['home-type'] === 'string') {
-          return of({
-            homeType: [params['home-type']]
-          })
-        }
-
-        return of({
-          homeType: []
-        })
-      })
-    );
-  }
+                return of({
+                    homeType: []
+                });
+            })
+        );
+    }
 }
