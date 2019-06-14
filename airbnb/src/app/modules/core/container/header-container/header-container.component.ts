@@ -1,42 +1,65 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { Router } from '@angular/router';
+import { DataService } from '../../services/data.service';
 
 export type HomeTypes =
-'Entire apartment' |
-'Private room' |
-'Tree house' |
-'Hotel room';
+    'Entire apartment' |
+    'Private room' |
+    'Tree house' |
+    'Hotel room';
 
 export interface FilterBarState {
-  homeType: { open: boolean };
+    homeType: { open: boolean; filters: HomeTypes[] };
+}
+
+export interface Filters {
+    homeType: HomeTypes[];
 }
 
 @Component({
-  selector: 'app-header-container',
-  templateUrl: './header-container.component.html',
-  styleUrls: ['./header-container.component.less']
+    selector: 'app-header-container',
+    templateUrl: './header-container.component.html',
+    styleUrls: ['./header-container.component.less']
 })
 export class HeaderContainerComponent implements OnInit {
 
-  filterBarState$ = new BehaviorSubject<FilterBarState>({ homeType: { open: false } });
+    filterBarState$ = new BehaviorSubject<FilterBarState>({ homeType: { open: false, filters: [] } });
+    constructor(private router: Router,
+        private dataService: DataService) { }
 
-  constructor() { }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+        this.dataService.getFiltersFromUrlQueryParams().subscribe((filters: Filters) => {
 
-  toggleFilterDropdown(filter: string) {
-    const filters = this.filterBarState$.getValue();
-    filters[filter].open = !filters[filter].open;
+            const filterBarState = this.filterBarState$.getValue();
+            filterBarState.homeType.filters = filters.homeType;
 
-    this.filterBarState$.next(filters);
-  }
+            this.filterBarState$.next(filterBarState);
 
-  closeFilterDropdown(filter: string) {
-    console.log('Here');
-    const filters = this.filterBarState$.getValue();
-    filters[filter].open = false;
+        });
+    }
 
-    this.filterBarState$.next(filters);
-  }
+    toggleFilterDropdown(filter: string) {
+        const filters = this.filterBarState$.getValue();
+        filters[filter].open = !filters[filter].open;
+
+        this.filterBarState$.next(filters);
+    }
+
+    closeFilterDropdown(filter: string): void {
+        const filters = this.filterBarState$.getValue();
+        if (filters[filter].open === false) { return; }
+        filters[filter].open = false;
+        this.filterBarState$.next(filters);
+    }
+
+    applyFilters(filters: Filters) {
+        console.log(filters);
+        this.closeFilterDropdown('homeType');
+        this.router.navigate(['homes'], { queryParams: { 'home-type': filters.homeType } });
+        console.log(this.router.url);
+
+    }
+
 }
